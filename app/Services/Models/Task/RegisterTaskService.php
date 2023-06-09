@@ -15,8 +15,11 @@ class RegisterTaskService extends BaseService
 
     public function run() {
         if($this->data['attachment_file']){
-            $path = $this->data['attachment_file']->store('tasks');
-            $this->data['attachment_file'] = $path;
+            $filenameWithExt = $this->data['attachment_file']->getClientOriginalName();
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $this->data['attachment_file']->getClientOriginalExtension();
+            $fileNameToStore= $filename.'_'.time().'.'.$extension;
+            $this->data['attachment_file'] = $this->data['attachment_file']->storeAs('tasks', $fileNameToStore);
         }
         $task = new Task($this->data);
         if($task->save()) {
